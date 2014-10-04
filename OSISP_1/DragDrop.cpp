@@ -2,6 +2,15 @@
 #include "DragDrop.h"
 #include "File_actions.h"
 
+BOOL validateFileType(TCHAR fileName[])
+{
+	UINT length = _tcslen(fileName);
+	TCHAR extension[5];
+	_tcsnccpy_s(extension, 5, &fileName[length-4], 4);
+
+	return  (_tcscmp(_T(".bmp"), extension) == 0);
+}
+
 void ProcessDragRequest(HWND hWnd, HDROP hDrop) {
 	UINT fileCount = DragQueryFile(hDrop, -1, NULL, NULL);
 
@@ -9,16 +18,9 @@ void ProcessDragRequest(HWND hWnd, HDROP hDrop) {
 		TCHAR fileName[MAX_PATH] = { 0 };
 		DragQueryFile(hDrop, 0, fileName, MAX_PATH);
 		if (MessageBox(hWnd, L"Close current file?", L"Drag and Drop", MB_YESNO) == IDYES)
-		{
-			SHFILEINFO shfi;
-			SHGetFileInfo(
-				fileName,
-				0,
-				&shfi,
-				sizeof(SHFILEINFO),
-				SHGFI_TYPENAME
-				);
-			if (_tccmp(shfi.szTypeName, L"Точечный рисунок") == 0) 
+		{		
+			
+			if (validateFileType(fileName)) 
 			{
 				LoadBitmapFromFile(hWnd, fileName);
 			}
