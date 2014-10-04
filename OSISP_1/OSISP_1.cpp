@@ -6,7 +6,10 @@
 #include "UI.h"
 #include <Commdlg.h>
 #include <CommCtrl.h>
+#include <WinUser.h>
+#include <shellapi.h>
 #include "File_actions.h"
+#include "DragDrop.h"
 
 #define MAX_LOADSTRING 100
 
@@ -14,7 +17,7 @@
 HINSTANCE hInst;								// current instance
 TCHAR szTitle[MAX_LOADSTRING];					// The title bar text
 TCHAR szWindowClass[MAX_LOADSTRING];			// the main window class name
-
+WNDPROC wpOrigEditProc;
 
 // Forward declarations of functions included in this code module:
 ATOM				MyRegisterClass(HINSTANCE hInstance);
@@ -183,20 +186,20 @@ LRESULT ProcessCommand(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	case UI_INSTRUMENTS_PENCOLOR:
 	{
-									DWORD color = ColorChooseDialog(hWnd);
-									Instrument::PenColor = color;
-									HPEN newPen = CreatePen(NULL, 1, color);
-									SelectObject(Instrument::DeviceDC, newPen);
-									SelectObject(Instrument::MemoryDC, newPen);
+		DWORD color = ColorChooseDialog(hWnd);
+		Instrument::PenColor = color;
+		HPEN newPen = CreatePen(NULL, 1, color);
+		SelectObject(Instrument::DeviceDC, newPen);
+		SelectObject(Instrument::MemoryDC, newPen);
 	}
 		break;
 	case UI_INSTRUMENTS_BRUSHCOLOR:
 	{
-									  DWORD color = ColorChooseDialog(hWnd);
-									  Instrument::BrushColor = color;
-									  HBRUSH newBrush = CreateSolidBrush(color);
-									  SelectObject(Instrument::DeviceDC, newBrush);
-									  SelectObject(Instrument::MemoryDC, newBrush);
+		DWORD color = ColorChooseDialog(hWnd);
+		Instrument::BrushColor = color;
+		HBRUSH newBrush = CreateSolidBrush(color);
+		SelectObject(Instrument::DeviceDC, newBrush);
+		SelectObject(Instrument::MemoryDC, newBrush);
 	}
 		break;
 	case UI_INSTRUMENTS_OVAL:
@@ -210,23 +213,25 @@ LRESULT ProcessCommand(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	case IDM_OPEN:
 	{
-					 TCHAR fileName[MAX_PATH] = { 0 };
-					 OpenBitmapDialog(hWnd, fileName);
-					 LoadBitmapFromFile(hWnd, fileName);
+		TCHAR fileName[MAX_PATH] = { 0 };
+		OpenBitmapDialog(hWnd, fileName);
+		LoadBitmapFromFile(hWnd, fileName);
 
 	}
 		break;
 	case IDM_SAVE:
 	{
-					 TCHAR fileName[_MAX_PATH] = { 0 };
-					 SaveBitmapDialog(hWnd, fileName);
-					 SaveImageToBitmap(hWnd, fileName);
+		TCHAR fileName[_MAX_PATH] = { 0 };
+		SaveBitmapDialog(hWnd, fileName);
+		SaveImageToBitmap(hWnd, fileName);
 	}
 		break;
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
 }
+
+
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -265,7 +270,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_CLOSE:
 	{
-		if (MessageBox(hWnd, L"Would you like to quit without saving?", L"Quit", MB_OKCANCEL) == IDOK)
+		if (MessageBox(hWnd, L"Would you like to quit?", L"Quit", MB_YESNO) == IDYES)
 		{
 			DestroyWindow(hWnd);
 		}
@@ -275,6 +280,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	}
 		break;
+	case  WM_DROPFILES:
+	{
+		ProcessDragRequest(hWnd, (HDROP)wParam);
+		return 0;
+	}
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		break;
@@ -283,8 +293,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	}
 	return 0;
 }
-
-
 
 
 

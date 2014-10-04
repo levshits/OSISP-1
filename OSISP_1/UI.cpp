@@ -2,6 +2,8 @@
 #include "UI.h"
 #include "windows.h"
 #include <Commctrl.h>
+#include <shellapi.h>
+#include <WinUser.h>
 #include "Instrument.h"
 #include "Resource.h"
 #pragma comment(lib, "COMCTL32.lib")
@@ -45,16 +47,15 @@ UI::UI(HWND hWnd, HINSTANCE hInstance)
 	tbrButtons[0].iBitmap = 0;
 	tbrButtons[0].idCommand = UI_INSTRUMENTS_PEN;
 	tbrButtons[0].fsState = TBSTATE_ENABLED;
-	tbrButtons[0].fsStyle = TBSTYLE_BUTTON | TBSTYLE_GROUP | TBSTYLE_CHECK;
+	tbrButtons[0].fsStyle = TBSTYLE_BUTTON | TBSTYLE_CHECKGROUP;
 	tbrButtons[0].dwData = 0L;
-	tbrButtons[0].iBitmap = 0;
 	tbrButtons[0].iString = 0;
 
 	//Line
-	tbrButtons[1].iBitmap = 2;
+	tbrButtons[1].iBitmap = 3;
 	tbrButtons[1].idCommand = UI_INSTRUMENTS_LINE;
 	tbrButtons[1].fsState = TBSTATE_ENABLED;
-	tbrButtons[1].fsStyle = TBSTYLE_BUTTON | TBSTYLE_GROUP | TBSTYLE_CHECK;
+	tbrButtons[1].fsStyle = TBSTYLE_BUTTON | TBSTYLE_CHECKGROUP;
 	tbrButtons[1].dwData = 0L;
 	tbrButtons[1].iString = 0;
 
@@ -62,7 +63,7 @@ UI::UI(HWND hWnd, HINSTANCE hInstance)
 	tbrButtons[2].iBitmap = 1;
 	tbrButtons[2].idCommand = UI_INSTRUMENTS_POLYGON;
 	tbrButtons[2].fsState = TBSTATE_ENABLED;
-	tbrButtons[2].fsStyle = TBSTYLE_BUTTON | TBSTYLE_GROUP | TBSTYLE_CHECK;
+	tbrButtons[2].fsStyle = TBSTYLE_BUTTON | TBSTYLE_CHECKGROUP;
 	tbrButtons[2].dwData = 0L;
 	tbrButtons[2].iString = 0;
 
@@ -70,7 +71,7 @@ UI::UI(HWND hWnd, HINSTANCE hInstance)
 	tbrButtons[3].iBitmap = 2;
 	tbrButtons[3].idCommand = UI_INSTRUMENTS_OVAL;
 	tbrButtons[3].fsState = TBSTATE_ENABLED;
-	tbrButtons[3].fsStyle = TBSTYLE_BUTTON | TBSTYLE_GROUP | TBSTYLE_CHECK;
+	tbrButtons[3].fsStyle = TBSTYLE_BUTTON | TBSTYLE_CHECKGROUP;
 	tbrButtons[3].dwData = 0L;
 	tbrButtons[3].iString = 0;
 
@@ -78,12 +79,12 @@ UI::UI(HWND hWnd, HINSTANCE hInstance)
 	tbrButtons[4].iBitmap = 2;
 	tbrButtons[4].idCommand = UI_INSTRUMENTS_TRIANGLE;
 	tbrButtons[4].fsState = TBSTATE_ENABLED;
-	tbrButtons[4].fsStyle = TBSTYLE_BUTTON | TBSTYLE_GROUP | TBSTYLE_CHECK;
+	tbrButtons[4].fsStyle = TBSTYLE_BUTTON | TBSTYLE_CHECKGROUP;
 	tbrButtons[4].dwData = 0L;
 	tbrButtons[4].iString = 0;
 
 	//Pen color selector
-	tbrButtons[5].iBitmap = 2;
+	tbrButtons[5].iBitmap = 4;
 	tbrButtons[5].idCommand = UI_INSTRUMENTS_PENCOLOR;
 	tbrButtons[5].fsState = TBSTATE_ENABLED;
 	tbrButtons[5].fsStyle = TBSTYLE_BUTTON;
@@ -159,13 +160,16 @@ UI::UI(HWND hWnd, HINSTANCE hInstance)
 		sizeof(TBBUTTON));
 	GetClientRect(hWnd, &rect);
 
-	HWND Canvas = CreateWindowEx(WS_EX_ACCEPTFILES, 
-									L"STATIC", 
+	HWND Canvas = CreateWindowEx(WS_EX_CLIENTEDGE | WS_EX_ACCEPTFILES,
+									L"Static", 
 									NULL, 
-									WS_CHILD | WS_VISIBLE | WS_BORDER, 
+									WS_CHILD | WS_VISIBLE, 
 									130, 30, rect.right - 150, rect.bottom-30, 
 									hWnd, NULL, hInstance, NULL);
 
+	
+	DragAcceptFiles(Canvas, FALSE);
+	UpdateWindow(Canvas);
 
 	GetClientRect(Canvas, &rect);
 	Instrument::canvasRect = rect;
