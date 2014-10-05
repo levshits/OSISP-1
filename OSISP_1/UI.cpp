@@ -7,40 +7,35 @@
 #include "Instrument.h"
 #include "Resource.h"
 #pragma comment(lib, "COMCTL32.lib")
+
 UI::UI(HWND hWnd, HINSTANCE hInstance)
 {
-#define BUTTON_WIDTH  110
-#define BUTTON_HEIGHT 30
-	int margin = 100;
-	
-	HWND penButton = CreateWindowEx(NULL,L"BUTTON",L"PEN",
-		WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON, 10, margin, BUTTON_WIDTH, BUTTON_HEIGHT, hWnd, (HMENU)UI_INSTRUMENTS_PEN, hInstance, NULL);
-	margin += BUTTON_HEIGHT;
-	HWND brushButton = CreateWindowEx(NULL, L"BUTTON", L"LINE",
-		WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON, 10, margin, BUTTON_WIDTH, BUTTON_HEIGHT, hWnd, (HMENU)UI_INSTRUMENTS_LINE, hInstance, NULL);
-	margin += BUTTON_HEIGHT;
-	HWND PolygonButton = CreateWindowEx(NULL, L"BUTTON", L"Polygon",
-		WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON, 10, margin, BUTTON_WIDTH, BUTTON_HEIGHT, hWnd, (HMENU)UI_INSTRUMENTS_POLYGON, hInstance, NULL);
-	margin += BUTTON_HEIGHT;
-	HWND ovalButton = CreateWindowEx(NULL, L"BUTTON", L"OVAL",
-		WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON, 10, margin, BUTTON_WIDTH, BUTTON_HEIGHT, hWnd, (HMENU)UI_INSTRUMENTS_OVAL, hInstance, NULL);
-	margin += BUTTON_HEIGHT;
+	#define BUTTON_WIDTH  110
+	#define BUTTON_HEIGHT 30
 
-	HWND penColorButton = CreateWindowEx(NULL, L"BUTTON", L"PEN COLOR",
-		WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON, 10, margin, BUTTON_WIDTH, BUTTON_HEIGHT, hWnd, (HMENU)UI_INSTRUMENTS_PENCOLOR, hInstance, NULL);
-	margin += BUTTON_HEIGHT;
-	HWND brushColorButton = CreateWindowEx(NULL, L"BUTTON", L"BRUSH COLOR",
-		WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON, 10, margin, BUTTON_WIDTH, BUTTON_HEIGHT, hWnd, (HMENU)UI_INSTRUMENTS_BRUSHCOLOR, hInstance, NULL);
-	margin += BUTTON_HEIGHT;
-	linewidthEdit = CreateWindowEx(NULL, L"EDIT", NULL,
-		WS_VISIBLE | WS_CHILD, 10, margin, BUTTON_WIDTH, BUTTON_HEIGHT, hWnd, (HMENU)UI_SPINBOX_WIDTH, hInstance, NULL);
-	RECT rect = { 0, 0, 0, 0 };
+	//Line width edit parameters
+	#define EDIT_WIDTH 30
+	#define EDIT_HEIGHT 20
+	#define EDIT_HMARGIN 375
+	#define EDIT_VMARGIN 4
+
+	//Line width label parameters
+	#define LABEL_WIDTH 70
+	#define LABEL_HEIGHT 20
+	#define LABEL_HMARGIN 300
+	#define LABEL_VMARGIN 4
+
+	#define DEFAULT_LINE_WIDTH L"1"
+	#define LINEWIDTH_LABEL_TXT L"Line width"
+
+	int margin = 100;	
+	
 	INITCOMMONCONTROLSEX InitCtrlEx;
 
 	InitCtrlEx.dwSize = sizeof(INITCOMMONCONTROLSEX);
 	InitCtrlEx.dwICC = ICC_BAR_CLASSES;
 	InitCommonControlsEx(&InitCtrlEx);
-	const int NUMBUTTONS = 14;
+	const int NUMBUTTONS = 15;
 	TBBUTTON tbrButtons[NUMBUTTONS];
 
 	//Pen
@@ -156,25 +151,48 @@ UI::UI(HWND hWnd, HINSTANCE hInstance)
 	tbrButtons[13].dwData = 0L;
 	tbrButtons[13].iString = 0;
 
-	
+	//Line width selector
+	tbrButtons[14].iBitmap = 0;
+	tbrButtons[14].idCommand = 0;
+	tbrButtons[14].fsState = TBSTATE_ENABLED;
+	tbrButtons[14].fsStyle = TBSTYLE_DROPDOWN;
+	tbrButtons[14].dwData = 0L;
+	tbrButtons[14].iString = 0;
+
+
 	HWND hWndToolbar = CreateToolbarEx(hWnd,
 		WS_VISIBLE | WS_CHILD | WS_BORDER,
-		IDB_INSTRUMENTS,
-		NUMBUTTONS,
-		hInstance,
-		IDB_INSTRUMENTS,
-		tbrButtons,
-		NUMBUTTONS,
+		IDB_INSTRUMENTS, NUMBUTTONS,
+		hInstance, IDB_INSTRUMENTS,
+		tbrButtons, NUMBUTTONS,
 		16, 16, 16, 16,
 		sizeof(TBBUTTON));
+	
+	linewidthEdit = CreateWindowEx(NULL, L"EDIT", DEFAULT_LINE_WIDTH,
+		WS_VISIBLE | WS_CHILD | WS_EX_CLIENTEDGE | WS_BORDER,
+		EDIT_HMARGIN, EDIT_VMARGIN, 
+		EDIT_WIDTH, EDIT_HEIGHT,
+		hWnd, (HMENU)UI_EDIT_WIDTH, hInstance, NULL);
+
+	SetParent(linewidthLabel, hWndToolbar);
+
+	linewidthLabel = CreateWindowEx(NULL, L"STATIC", LINEWIDTH_LABEL_TXT,
+		WS_VISIBLE | WS_CHILD | WS_EX_CLIENTEDGE,
+		LABEL_HMARGIN, LABEL_VMARGIN,
+		LABEL_WIDTH, LABEL_HEIGHT,
+		hWnd, NULL, hInstance, NULL);
+
+	SetParent(linewidthEdit, hWndToolbar);
+
+	RECT rect = { 0, 0, 0, 0 };
 	GetClientRect(hWnd, &rect);
 
 	HWND Canvas = CreateWindowEx(WS_EX_CLIENTEDGE | WS_EX_ACCEPTFILES,
-									L"Static", 
-									NULL, 
-									WS_CHILD | WS_VISIBLE, 
-									130, 30, rect.right - 150, rect.bottom-30, 
-									hWnd, NULL, hInstance, NULL);
+		L"Static", 
+		NULL, 
+		WS_CHILD | WS_VISIBLE, 
+		130, 30, rect.right - 150, rect.bottom-30, 
+		hWnd, NULL, hInstance, NULL);
 
 	
 	DragAcceptFiles(Canvas, FALSE);

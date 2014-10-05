@@ -17,11 +17,12 @@
 #define UI_MODIFICATORS_BRUSHCOLOR  2003
 
 
-#define UI_SPINBOX_WIDTH 3000
+#define UI_EDIT_WIDTH 3000
 class UI
 {
  public:
 	UI(HWND hWnd, HINSTANCE hInstance);
+	HWND linewidthLabel;
 	HWND linewidthEdit;
 	DWORD penColor;
 	DWORD brushColor;

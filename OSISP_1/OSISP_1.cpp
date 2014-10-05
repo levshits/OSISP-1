@@ -167,12 +167,38 @@ DWORD ColorChooseDialog(HWND hWnd)
 	return 0;
 }
 
+LRESULT ProcessEditNotification(HWND hWnd, WPARAM wParam, LPARAM lParam)
+{
+	int wmId = LOWORD(wParam);
+	int wmEvent = HIWORD(wParam);
+	HWND edit = (HWND)lParam;
+
+	switch (wmEvent)
+	{
+	case EN_CHANGE:
+	{
+		TCHAR lineWidth[5] = { 0 };
+
+		GetWindowText(edit, lineWidth, 5);
+		int width = _wtoi(lineWidth);
+		instrument->Width = width;
+		HPEN newPen = CreatePen(NULL, instrument->Width, Instrument::PenColor);
+		SelectObject(Instrument::DeviceDC, newPen);
+		SelectObject(Instrument::MemoryDC, newPen);
+		return 0;
+	}
+		break;
+	default:
+		return 0;
+	}
+}
+
 LRESULT ProcessCommand(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	int wmId, wmEvent;
 	wmId = LOWORD(wParam);
 	wmEvent = HIWORD(wParam);
-	// Parse the menu selections:
+
 	switch (wmId)
 	{
 	case UI_INSTRUMENTS_PEN:
@@ -224,6 +250,11 @@ LRESULT ProcessCommand(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		TCHAR fileName[_MAX_PATH] = { 0 };
 		SaveBitmapDialog(hWnd, fileName);
 		SaveImageToBitmap(hWnd, fileName);
+	}
+		break;
+	case UI_EDIT_WIDTH:
+	{
+		ProcessEditNotification(hWnd, wParam, lParam);							 
 	}
 		break;
 	default:
@@ -284,7 +315,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		ProcessDragRequest(hWnd, (HDROP)wParam);
 		return 0;
-	}
+	}	
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		break;
