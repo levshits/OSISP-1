@@ -40,7 +40,7 @@ UI::UI(HWND hWnd, HINSTANCE hInstance)
 	InitCtrlEx.dwSize = sizeof(INITCOMMONCONTROLSEX);
 	InitCtrlEx.dwICC = ICC_BAR_CLASSES;
 	InitCommonControlsEx(&InitCtrlEx);
-	const int NUMBUTTONS = 13;
+	const int NUMBUTTONS = 14;
 	TBBUTTON tbrButtons[NUMBUTTONS];
 
 	//Pen
@@ -107,46 +107,54 @@ UI::UI(HWND hWnd, HINSTANCE hInstance)
 	tbrButtons[7].dwData = 0L;
 	tbrButtons[7].iString = 0;
 
-	//Group separator
-	tbrButtons[8].iBitmap = 0;
-	tbrButtons[8].idCommand = 0;
+	//Pen color selector
+	tbrButtons[8].iBitmap = 10;
+	tbrButtons[8].idCommand = UI_INSTRUMENTS_BRUSHCOLOR;
 	tbrButtons[8].fsState = TBSTATE_ENABLED;
-	tbrButtons[8].fsStyle = TBSTYLE_SEP;
+	tbrButtons[8].fsStyle = TBSTYLE_BUTTON;
 	tbrButtons[8].dwData = 0L;
 	tbrButtons[8].iString = 0;
 
-	//Grabe
-	tbrButtons[9].iBitmap = 5;
-	tbrButtons[9].idCommand = UI_INSTRUMENTS_GRABE;
+	//Group separator
+	tbrButtons[9].iBitmap = 0;
+	tbrButtons[9].idCommand = 0;
 	tbrButtons[9].fsState = TBSTATE_ENABLED;
-	tbrButtons[9].fsStyle = TBSTYLE_BUTTON;
+	tbrButtons[9].fsStyle = TBSTYLE_SEP;
 	tbrButtons[9].dwData = 0L;
 	tbrButtons[9].iString = 0;
 
-	//Group separator
-	tbrButtons[10].iBitmap = 0;
-	tbrButtons[10].idCommand = 0;
+	//Grabe
+	tbrButtons[10].iBitmap = 5;
+	tbrButtons[10].idCommand = UI_INSTRUMENTS_GRABE;
 	tbrButtons[10].fsState = TBSTATE_ENABLED;
-	tbrButtons[10].fsStyle = TBSTYLE_SEP;
+	tbrButtons[10].fsStyle = TBSTYLE_BUTTON;
 	tbrButtons[10].dwData = 0L;
 	tbrButtons[10].iString = 0;
 
-	//Zoom
-	tbrButtons[11].iBitmap = 7;
-	tbrButtons[11].idCommand = UI_INSTRUMENTS_ZOOM;
+	//Group separator
+	tbrButtons[11].iBitmap = 0;
+	tbrButtons[11].idCommand = 0;
 	tbrButtons[11].fsState = TBSTATE_ENABLED;
-	tbrButtons[11].fsStyle = TBSTYLE_BUTTON;
+	tbrButtons[11].fsStyle = TBSTYLE_SEP;
 	tbrButtons[11].dwData = 0L;
 	tbrButtons[11].iString = 0;
+
+	//Zoom
+	tbrButtons[12].iBitmap = 7;
+	tbrButtons[12].idCommand = UI_INSTRUMENTS_ZOOM;
+	tbrButtons[12].fsState = TBSTATE_ENABLED;
+	tbrButtons[12].fsStyle = TBSTYLE_BUTTON;
+	tbrButtons[12].dwData = 0L;
+	tbrButtons[12].iString = 0;
 	
 
 	//Group separator
-	tbrButtons[12].iBitmap = 0;
-	tbrButtons[12].idCommand = 0;
-	tbrButtons[12].fsState = TBSTATE_ENABLED;
-	tbrButtons[12].fsStyle = TBSTYLE_SEP;
-	tbrButtons[12].dwData = 0L;
-	tbrButtons[12].iString = 0;
+	tbrButtons[13].iBitmap = 0;
+	tbrButtons[13].idCommand = 0;
+	tbrButtons[13].fsState = TBSTATE_ENABLED;
+	tbrButtons[13].fsStyle = TBSTYLE_SEP;
+	tbrButtons[13].dwData = 0L;
+	tbrButtons[13].iString = 0;
 
 	
 	HWND hWndToolbar = CreateToolbarEx(hWnd,
