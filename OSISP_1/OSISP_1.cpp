@@ -181,6 +181,13 @@ LRESULT ProcessEditNotification(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 		GetWindowText(edit, lineWidth, 5);
 		int width = _wtoi(lineWidth);
+
+		if (width == 0) {
+			MessageBox(hWnd, L"Sorry, incorrect value specified.", L"Incorrect value", MB_OK);
+			Edit_
+			return 0;
+		}
+
 		instrument->Width = width;
 		HPEN newPen = CreatePen(NULL, instrument->Width, Instrument::PenColor);
 		SelectObject(Instrument::DeviceDC, newPen);
