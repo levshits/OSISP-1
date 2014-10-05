@@ -46,7 +46,7 @@ UI::UI(HWND hWnd, HINSTANCE hInstance)
 	//Pen
 	tbrButtons[0].iBitmap = 0;
 	tbrButtons[0].idCommand = UI_INSTRUMENTS_PEN;
-	tbrButtons[0].fsState = TBSTATE_ENABLED;
+	tbrButtons[0].fsState = TBSTATE_ENABLED | TBSTATE_CHECKED;
 	tbrButtons[0].fsStyle = TBSTYLE_BUTTON | TBSTYLE_CHECKGROUP;
 	tbrButtons[0].dwData = 0L;
 	tbrButtons[0].iString = 0;
@@ -76,16 +76,16 @@ UI::UI(HWND hWnd, HINSTANCE hInstance)
 	tbrButtons[3].iString = 0;
 
 	//Triangle
-	tbrButtons[4].iBitmap = 2;
+	tbrButtons[4].iBitmap = 4;
 	tbrButtons[4].idCommand = UI_INSTRUMENTS_TRIANGLE;
 	tbrButtons[4].fsState = TBSTATE_ENABLED;
 	tbrButtons[4].fsStyle = TBSTYLE_BUTTON | TBSTYLE_CHECKGROUP;
 	tbrButtons[4].dwData = 0L;
 	tbrButtons[4].iString = 0;
 
-	//Pen color selector
-	tbrButtons[5].iBitmap = 4;
-	tbrButtons[5].idCommand = UI_INSTRUMENTS_PENCOLOR;
+	//Text output
+	tbrButtons[5].iBitmap = 6;
+	tbrButtons[5].idCommand = UI_INSTRUMENTS_TEXTOUT;
 	tbrButtons[5].fsState = TBSTATE_ENABLED;
 	tbrButtons[5].fsStyle = TBSTYLE_BUTTON;
 	tbrButtons[5].dwData = 0L;
@@ -99,10 +99,10 @@ UI::UI(HWND hWnd, HINSTANCE hInstance)
 	tbrButtons[6].dwData = 0L;
 	tbrButtons[6].iString = 0;
 
-	//Text output
-	tbrButtons[7].iBitmap = 2;
-	tbrButtons[7].idCommand = UI_INSTRUMENTS_TEXTOUT;
-	tbrButtons[5].fsState = TBSTATE_ENABLED;
+	//Pen color selector
+	tbrButtons[7].iBitmap = 9;
+	tbrButtons[7].idCommand = UI_INSTRUMENTS_PENCOLOR;
+	tbrButtons[7].fsState = TBSTATE_ENABLED;
 	tbrButtons[7].fsStyle = TBSTYLE_BUTTON;
 	tbrButtons[7].dwData = 0L;
 	tbrButtons[7].iString = 0;
@@ -116,7 +116,7 @@ UI::UI(HWND hWnd, HINSTANCE hInstance)
 	tbrButtons[8].iString = 0;
 
 	//Grabe
-	tbrButtons[9].iBitmap = 2;
+	tbrButtons[9].iBitmap = 5;
 	tbrButtons[9].idCommand = UI_INSTRUMENTS_GRABE;
 	tbrButtons[9].fsState = TBSTATE_ENABLED;
 	tbrButtons[9].fsStyle = TBSTYLE_BUTTON;
@@ -132,12 +132,13 @@ UI::UI(HWND hWnd, HINSTANCE hInstance)
 	tbrButtons[10].iString = 0;
 
 	//Zoom
-	tbrButtons[11].iBitmap = 2;
+	tbrButtons[11].iBitmap = 7;
 	tbrButtons[11].idCommand = UI_INSTRUMENTS_ZOOM;
 	tbrButtons[11].fsState = TBSTATE_ENABLED;
 	tbrButtons[11].fsStyle = TBSTYLE_BUTTON;
 	tbrButtons[11].dwData = 0L;
 	tbrButtons[11].iString = 0;
+	
 
 	//Group separator
 	tbrButtons[12].iBitmap = 0;

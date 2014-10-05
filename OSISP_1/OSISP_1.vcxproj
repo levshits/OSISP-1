@@ -107,7 +107,7 @@
     <ResourceCompile Include="OSISP_1.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\..\STUDYING\ОСиСП\OSISP-master (1)_my\OSISP-master\OSISP_1\instruments.bmp" />
+    <Image Include="instruments.bmp" />
     <Image Include="OSISP_1.ico" />
     <Image Include="small.ico" />
   </ItemGroup>
