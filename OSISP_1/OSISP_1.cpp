@@ -184,7 +184,6 @@ LRESULT ProcessEditNotification(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 		if (width == 0) {
 			MessageBox(hWnd, L"Sorry, incorrect value specified.", L"Incorrect value", MB_OK);
-			Edit_
 			return 0;
 		}
 
