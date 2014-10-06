@@ -217,19 +217,10 @@ void SaveImageToBitmap(HWND hWnd, LPTSTR filePath)
 
 void LoadBitmapFromFile(HWND hWnd, LPTSTR fileName)
 {
-
-	/*
-	HBITMAP loadedBitmap = (HBITMAP)LoadImage(NULL, L"d:\\my.bmp",
-	IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-	CopyBitmap(Instrument::Buffer, loadedBitmap);
-	SelectObject(Instrument::MemoryDC, Instrument::Buffer);
-	BitBlt(Instrument::DeviceDC, Instrument::canvasRect.left, Instrument::canvasRect.top, Instrument::canvasRect.right,
-	Instrument::canvasRect.bottom, Instrument::MemoryDC, Instrument::canvasRect.left, Instrument::canvasRect.top, SRCCOPY);
-		*/	
-
 	Instrument::Buffer = (HBITMAP)LoadImage(NULL, fileName,
 		IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-	SelectObject(Instrument::MemoryDC, Instrument::Buffer);
+	HANDLE oldBuffer = SelectObject(Instrument::MemoryDC, Instrument::Buffer);
+	DeleteObject(oldBuffer);
 	BitBlt(Instrument::DeviceDC, Instrument::canvasRect.left, Instrument::canvasRect.top, Instrument::canvasRect.right,
 		Instrument::canvasRect.bottom, Instrument::MemoryDC, Instrument::canvasRect.left, Instrument::canvasRect.top, SRCCOPY);
 	

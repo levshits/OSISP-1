@@ -81,6 +81,7 @@
   <ItemGroup>
     <ClInclude Include="File_actions.h" />
     <ClInclude Include="DragDrop.h" />
+    <ClInclude Include="Header.h" />
     <ClInclude Include="Line.h" />
     <ClInclude Include="Instrument.h" />
     <ClInclude Include="InstrumentsLibrary.h" />

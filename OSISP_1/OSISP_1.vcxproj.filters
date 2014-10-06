@@ -57,6 +57,9 @@
     <ClInclude Include="DragDrop.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Header.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -87,7 +90,7 @@
     <Image Include="OSISP_1.ico">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\..\STUDYING\ОСиСП\OSISP-master (1)_my\OSISP-master\OSISP_1\instruments.bmp">
+    <Image Include="instruments.bmp">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
