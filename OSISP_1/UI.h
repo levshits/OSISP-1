@@ -39,9 +39,10 @@ class UI
 	{
 		return y - CanvasOffsetY;
 	}
-
-private:
 	void CreateCanvas(HWND hwnd, HINSTANCE hinstance, int width, int height);
+	void CreateCanvasMemoryDC(HWND hwnd, HINSTANCE hinstance, int width, int height);
+	bool isPointInsideCanvas(int x, int y);
+	
 	
 };
 

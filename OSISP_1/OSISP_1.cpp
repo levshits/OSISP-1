@@ -40,6 +40,8 @@ DWORD Instrument::PenColor = 0;
 int Instrument::Width = 1;
 Instrument * instrument = Pen::GetInstance();
 UI UserInterface;
+HWND hwnd;
+HINSTANCE hinstance;
 
 int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
@@ -122,6 +124,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	HWND hWnd;
 
 	hInst = hInstance; // Store instance handle in our global variable
+	hinstance = hInstance;
 
 	hWnd = CreateWindowEx(WS_EX_ACCEPTFILES, szWindowClass, szTitle,
 		WS_OVERLAPPEDWINDOW | WS_BORDER | WS_CAPTION,
@@ -130,7 +133,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	{
 		return FALSE;
 	}
-
+	hwnd = hWnd;
 	ShowWindow(hWnd, SW_MAXIMIZE);
 	UpdateWindow(hWnd);
 	UserInterface.CreateUI(hWnd, hInst);
@@ -266,6 +269,7 @@ LRESULT ProcessCommand(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		DialogBox(hInst, MAKEINTRESOURCE(IDD_CREATE_DIALOG),
 			hWnd, CreateDlgProc);
 
+
 	}
 		break;
 	case UI_EDIT_WIDTH:
@@ -290,33 +294,42 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 	case WM_LBUTTONDOWN:
 	{
-		instrument->Initialize(
-			UserInterface.getCanvasCursorX(LOWORD(lParam)),
-			UserInterface.getCanvasCursorY(HIWORD(lParam)));
-		isActivated = true;
+		
+		int x = UserInterface.getCanvasCursorX(LOWORD(lParam));
+		int y = UserInterface.getCanvasCursorY(HIWORD(lParam));
+		if (UserInterface.isPointInsideCanvas(x,y))
+		{
+			instrument->Initialize(x,y);
+			isActivated = true;
+		}
 	}
 		break;
 	case WM_MOUSEMOVE:
 	{
 		if (isActivated)
 		{
-			instrument->Display(
-				UserInterface.getCanvasCursorX(LOWORD(lParam)),
-				UserInterface.getCanvasCursorY(HIWORD(lParam)));
+			int x = UserInterface.getCanvasCursorX(LOWORD(lParam));
+			int y = UserInterface.getCanvasCursorY(HIWORD(lParam));
+			if (UserInterface.isPointInsideCanvas(x, y))
+			{
+				instrument->Display(x, y);
+			}
 		}
 	}
 		break;
 	case WM_LBUTTONUP:
 	{
-		instrument->Draw(
+		if (isActivated)
+		{
+			instrument->Draw(
 				UserInterface.getCanvasCursorX(LOWORD(lParam)),
 				UserInterface.getCanvasCursorY(HIWORD(lParam)));
-		isActivated = false;
+			isActivated = false;
+		}		
 	}
 		break;	
 	case WM_SIZE:
 	{
-					  int i = 100;
 	}
 		break;
 	case WM_COMMAND:
@@ -408,20 +421,8 @@ INT_PTR CALLBACK CreateDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lP
 				//SetWindowPos(instrument->Canvas, HWND_TOPMOST, 130, 30,
 				//	bitmapWidth, bitmapHeight, SWP_SHOWWINDOW);
 
-				MoveWindow(Instrument::Canvas, 130, 30, bitmapWidth, bitmapHeight, TRUE);
-				ScrollWindow(Instrument::Canvas, 10, 10, NULL, &instrument->canvasRect);
-				UpdateWindow(Instrument::Canvas);
-				Instrument::DeviceDC = GetDC(Instrument::Canvas);
-				Instrument::MemoryDC = CreateCompatibleDC(Instrument::DeviceDC);
-				Instrument::Buffer = CreateCompatibleBitmap(Instrument::DeviceDC,
-					bitmapWidth, bitmapHeight);
-				SelectObject(Instrument::MemoryDC, Instrument::Buffer);
-				//RedrawWindow(instrument->Canvas, NULL, NULL, RDW_UPDATENOW);
-				RECT rect = { 0, 0, 0, 0 };
-				GetClientRect(Instrument::Canvas, &rect);
-				static HBRUSH Brush = CreateSolidBrush(RGB(255, 255, 255));
-				FillRect(Instrument::MemoryDC, &rect, Brush);
-
+				UserInterface.CreateCanvas(hwnd, hinstance, bitmapWidth, bitmapHeight);
+				UserInterface.CreateCanvasMemoryDC(hwnd, hinstance, bitmapWidth, bitmapHeight);
 				EndDialog(hDlg, LOWORD(wParam));
 				return (INT_PTR)TRUE;
 			}	

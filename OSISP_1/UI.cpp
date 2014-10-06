@@ -176,14 +176,8 @@ void UI::CreateUI(HWND hWnd, HINSTANCE hInstance)
 
 	
 	this->CreateCanvas(hWnd, hInstance, 500,400);
-	RECT rect = Instrument::canvasRect;
-	Instrument::MemoryDC = CreateCompatibleDC(Instrument::DeviceDC);
-	Instrument::Buffer = CreateCompatibleBitmap(Instrument::DeviceDC, rect.right, rect.bottom);
-	SelectObject(Instrument::MemoryDC, Instrument::Buffer);
-	static HBRUSH Brush = CreateSolidBrush(RGB(255, 255, 255));
-	FillRect(Instrument::MemoryDC, &rect, Brush);
-	BitBlt(Instrument::DeviceDC, rect.left, rect.top, rect.right, rect.bottom, Instrument::MemoryDC, rect.left, rect.top, SRCCOPY);
-	
+	this->CreateCanvasMemoryDC(hWnd, hInstance, 500, 400);
+		
 }
 
 void UI::CreateCanvas(HWND hWnd, HINSTANCE hInstance, int width, int height)
@@ -209,10 +203,11 @@ void UI::CreateCanvas(HWND hWnd, HINSTANCE hInstance, int width, int height)
 		CanvasOffsetX, CanvasOffsetY, width , height,
 		hWnd, NULL, hInstance, NULL);
 	DragAcceptFiles(Canvas, FALSE);
+	UpdateWindow(hWnd);
 	UpdateWindow(Canvas);
 	GetClientRect(Canvas, &rect);
 	if (Instrument::Canvas != 0)
-		DeleteObject(Instrument::Canvas);
+		DestroyWindow(Instrument::Canvas);
 	Instrument::Canvas = Canvas;
 	Instrument::canvasRect = rect;
 	if (Instrument::DeviceDC != 0)
@@ -220,4 +215,24 @@ void UI::CreateCanvas(HWND hWnd, HINSTANCE hInstance, int width, int height)
 	Instrument::DeviceDC = GetDC(Canvas);
 
 	
+}
+
+void UI::CreateCanvasMemoryDC(HWND hwnd, HINSTANCE hinstance, int width, int height)
+{
+	RECT rect = Instrument::canvasRect;
+	Instrument::MemoryDC = CreateCompatibleDC(Instrument::DeviceDC);
+	Instrument::Buffer = CreateCompatibleBitmap(Instrument::DeviceDC, width, height);
+	SelectObject(Instrument::MemoryDC, Instrument::Buffer);
+	static HBRUSH Brush = CreateSolidBrush(RGB(255, 255, 255));
+	FillRect(Instrument::MemoryDC, &rect, Brush);
+	BitBlt(Instrument::DeviceDC, rect.left, rect.top, rect.right, rect.bottom, Instrument::MemoryDC, rect.left, rect.top, SRCCOPY);
+}
+
+bool UI::isPointInsideCanvas(int x, int y)
+{
+	if ((x<Instrument::canvasRect.right) && (x>0) && (y<Instrument::canvasRect.bottom) && (y>0))
+		return true;
+	else
+		return false;
+
 }
