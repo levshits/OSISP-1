@@ -12,7 +12,7 @@ public:
 	static HDC MemoryDC, DeviceDC;
 	static HBITMAP Buffer;
 	static RECT canvasRect;
-	HWND Canvas;
+	static HWND Canvas;
 	int Width;
 	virtual void Draw(int x, int y) = 0;
 	virtual void Display(int x, int y) = 0;

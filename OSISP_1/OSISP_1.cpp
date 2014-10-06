@@ -24,6 +24,7 @@ ATOM				MyRegisterClass(HINSTANCE hInstance);
 BOOL				InitInstance(HINSTANCE, int);
 LRESULT CALLBACK	WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK	About(HWND, UINT, WPARAM, LPARAM);
+INT_PTR CALLBACK CreateDlgProc(HWND, UINT, WPARAM, LPARAM );
 
 int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
@@ -258,6 +259,13 @@ LRESULT ProcessCommand(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		SaveImageToBitmap(hWnd, fileName);
 	}
 		break;
+	case IDM_CREATE:
+	{
+		DialogBox(hInst, MAKEINTRESOURCE(IDD_CREATE_DIALOG),
+			hWnd, CreateDlgProc);
+
+	}
+		break;
 	case UI_EDIT_WIDTH:
 	{
 		ProcessEditNotification(hWnd, wParam, lParam);							 
@@ -350,6 +358,69 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 		break;
 	}
+	return (INT_PTR)FALSE;
+}
+
+INT_PTR CALLBACK CreateDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	switch (message)
+	{
+	case WM_INITDIALOG:
+		return (INT_PTR)TRUE;
+
+	case WM_COMMAND:
+	{
+		switch (LOWORD(wParam))
+		{
+		case IDOK:
+		{
+			TCHAR bitmapWidthStr[MAX_LOADSTRING];
+			GetDlgItemText(hDlg, IDC_BITMAP_WIDTH, bitmapWidthStr, MAX_LOADSTRING);
+
+			TCHAR bitmapHeightStr[MAX_LOADSTRING];
+			GetDlgItemText(hDlg, IDC_BITMAP_HEIGHT, bitmapHeightStr, MAX_LOADSTRING);
+
+			int bitmapWidth = _wtoi(bitmapWidthStr);
+			int bitmapHeight = _wtoi(bitmapHeightStr);
+
+			if ((bitmapWidth == 0) || (bitmapHeight == 0))
+			{
+				MessageBox(hDlg, L"Sorry, incorrect value specified.", L"Create Bitmap", MB_OK);
+			} 
+			else
+			{
+				
+				/*ScrollWindowEx(instrument->Canvas, 10, 10, NULL, &Instrument::canvasRect,
+					NULL, NULL, NULL);*/
+				//SetWindowPos(instrument->Canvas, HWND_TOPMOST, 130, 30,
+				//	bitmapWidth, bitmapHeight, SWP_SHOWWINDOW);
+
+				MoveWindow(Instrument::Canvas, 130, 30, bitmapWidth, bitmapHeight, TRUE);
+				ScrollWindow(Instrument::Canvas, 10, 10, NULL, &instrument->canvasRect);
+				UpdateWindow(Instrument::Canvas);
+				Instrument::DeviceDC = GetDC(Instrument::Canvas);
+				Instrument::MemoryDC = CreateCompatibleDC(Instrument::DeviceDC);
+				Instrument::Buffer = CreateCompatibleBitmap(Instrument::DeviceDC,
+					bitmapWidth, bitmapHeight);
+				SelectObject(Instrument::MemoryDC, Instrument::Buffer);
+				//RedrawWindow(instrument->Canvas, NULL, NULL, RDW_UPDATENOW);
+				RECT rect = { 0, 0, 0, 0 };
+				GetClientRect(Instrument::Canvas, &rect);
+				static HBRUSH Brush = CreateSolidBrush(RGB(255, 255, 255));
+				FillRect(Instrument::MemoryDC, &rect, Brush);
+
+				EndDialog(hDlg, LOWORD(wParam));
+				return (INT_PTR)TRUE;
+			}	
+		}
+			break;
+		case IDCANCEL:
+			EndDialog(hDlg, LOWORD(wParam));
+			return (INT_PTR)TRUE;			
+		}
+	}
+	}
+
 	return (INT_PTR)FALSE;
 }
 
