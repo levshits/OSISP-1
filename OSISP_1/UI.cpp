@@ -8,7 +8,7 @@
 #include "Resource.h"
 #pragma comment(lib, "COMCTL32.lib")
 
-UI::UI(HWND hWnd, HINSTANCE hInstance)
+void UI::CreateUI(HWND hWnd, HINSTANCE hInstance)
 {
 	#define BUTTON_WIDTH  110
 	#define BUTTON_HEIGHT 30
@@ -27,15 +27,13 @@ UI::UI(HWND hWnd, HINSTANCE hInstance)
 
 	#define DEFAULT_LINE_WIDTH L"1"
 	#define LINEWIDTH_LABEL_TXT L"Line width"
-
-	int margin = 100;	
 	
 	INITCOMMONCONTROLSEX InitCtrlEx;
 
 	InitCtrlEx.dwSize = sizeof(INITCOMMONCONTROLSEX);
 	InitCtrlEx.dwICC = ICC_BAR_CLASSES;
 	InitCommonControlsEx(&InitCtrlEx);
-	const int NUMBUTTONS = 15;
+	const int NUMBUTTONS = 14;
 	TBBUTTON tbrButtons[NUMBUTTONS];
 
 	//Pen
@@ -102,7 +100,7 @@ UI::UI(HWND hWnd, HINSTANCE hInstance)
 	tbrButtons[7].dwData = 0L;
 	tbrButtons[7].iString = 0;
 
-	//Pen color selector
+	//brush color selector
 	tbrButtons[8].iBitmap = 10;
 	tbrButtons[8].idCommand = UI_INSTRUMENTS_BRUSHCOLOR;
 	tbrButtons[8].fsState = TBSTATE_ENABLED;
@@ -151,14 +149,6 @@ UI::UI(HWND hWnd, HINSTANCE hInstance)
 	tbrButtons[13].dwData = 0L;
 	tbrButtons[13].iString = 0;
 
-	//Line width selector
-	tbrButtons[14].iBitmap = 0;
-	tbrButtons[14].idCommand = 0;
-	tbrButtons[14].fsState = TBSTATE_ENABLED;
-	tbrButtons[14].fsStyle = TBSTYLE_DROPDOWN;
-	tbrButtons[14].dwData = 0L;
-	tbrButtons[14].iString = 0;
-
 
 	HWND hWndToolbar = CreateToolbarEx(hWnd,
 		WS_VISIBLE | WS_CHILD | WS_BORDER,
@@ -184,27 +174,50 @@ UI::UI(HWND hWnd, HINSTANCE hInstance)
 
 	SetParent(linewidthEdit, hWndToolbar);
 
-	RECT rect = { 0, 0, 0, 0 };
-	GetClientRect(hWnd, &rect);
-
-	HWND Canvas = CreateWindowEx(WS_EX_CLIENTEDGE | WS_EX_ACCEPTFILES,
-		L"Static", 
-		NULL, 
-		WS_CHILD | WS_VISIBLE, 
-		130, 30, rect.right - 150, rect.bottom-30, 
-		hWnd, NULL, hInstance, NULL);
-
 	
-	DragAcceptFiles(Canvas, FALSE);
-	UpdateWindow(Canvas);
-
-	GetClientRect(Canvas, &rect);
-	Instrument::canvasRect = rect;
-	Instrument::DeviceDC = GetDC(Canvas);
+	this->CreateCanvas(hWnd, hInstance, 500,400);
+	RECT rect = Instrument::canvasRect;
 	Instrument::MemoryDC = CreateCompatibleDC(Instrument::DeviceDC);
 	Instrument::Buffer = CreateCompatibleBitmap(Instrument::DeviceDC, rect.right, rect.bottom);
 	SelectObject(Instrument::MemoryDC, Instrument::Buffer);
 	static HBRUSH Brush = CreateSolidBrush(RGB(255, 255, 255));
 	FillRect(Instrument::MemoryDC, &rect, Brush);
+	BitBlt(Instrument::DeviceDC, rect.left, rect.top, rect.right, rect.bottom, Instrument::MemoryDC, rect.left, rect.top, SRCCOPY);
+	
 }
 
+void UI::CreateCanvas(HWND hWnd, HINSTANCE hInstance, int width, int height)
+{
+	RECT rect = { 0, 0, 0, 0 };
+	GetClientRect(hWnd, &rect);
+	CanvasOffsetX = 5;
+	CanvasOffsetY = 30;
+	if ((width == 0) && (height == 0))
+	{		
+		width = rect.right - 2 * CanvasOffsetX;
+		height = rect.bottom - CanvasOffsetY;
+	}
+	else
+	{
+		CanvasOffsetX = (rect.right - 2 * CanvasOffsetX - width)/ 2;
+		CanvasOffsetY = (rect.bottom - CanvasOffsetY - width)/2 + CanvasOffsetY;
+	}
+	HWND Canvas = CreateWindowEx(WS_EX_CLIENTEDGE | WS_EX_ACCEPTFILES,
+		L"Static",
+		NULL,
+		WS_CHILD | WS_VISIBLE,
+		CanvasOffsetX, CanvasOffsetY, width , height,
+		hWnd, NULL, hInstance, NULL);
+	DragAcceptFiles(Canvas, FALSE);
+	UpdateWindow(Canvas);
+	GetClientRect(Canvas, &rect);
+	if (Instrument::Canvas != 0)
+		DeleteObject(Instrument::Canvas);
+	Instrument::Canvas = Canvas;
+	Instrument::canvasRect = rect;
+	if (Instrument::DeviceDC != 0)
+		DeleteObject(Instrument::Canvas);
+	Instrument::DeviceDC = GetDC(Canvas);
+
+	
+}

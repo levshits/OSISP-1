@@ -25,6 +25,21 @@ BOOL				InitInstance(HINSTANCE, int);
 LRESULT CALLBACK	WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK	About(HWND, UINT, WPARAM, LPARAM);
 
+HDC DisplayDC;
+HWND ButtonPen;
+int previous_x, previous_y;
+bool isActivated = false;
+HWND Instrument::Canvas = 0;
+HDC Instrument::DeviceDC = 0;
+HDC Instrument::MemoryDC = 0;
+HBITMAP Instrument::Buffer = 0;
+RECT Instrument::canvasRect = { 0, 0, 0, 0 };
+DWORD Instrument::BrushColor = 0;
+DWORD Instrument::PenColor = 0;
+int Instrument::Width = 1;
+Instrument * instrument = Pen::GetInstance();
+UI UserInterface;
+
 int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
 	_In_ LPTSTR    lpCmdLine,
@@ -117,9 +132,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
 	ShowWindow(hWnd, SW_MAXIMIZE);
 	UpdateWindow(hWnd);
-	UI::UI(hWnd, hInst);
+	UserInterface.CreateUI(hWnd, hInst);
 	UpdateWindow(hWnd);
-
 	return TRUE;
 }
 
@@ -133,17 +147,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //  WM_DESTROY	- post a quit message and return
 //
 //
-HDC DisplayDC;
-HWND ButtonPen;
-int previous_x, previous_y;
-bool isActivated = false;
-HDC Instrument::DeviceDC = 0;
-HDC Instrument::MemoryDC = 0;
-HBITMAP Instrument::Buffer = 0;
-RECT Instrument::canvasRect = { 0, 0, 0, 0 };
-DWORD Instrument::BrushColor = 0;
-DWORD Instrument::PenColor = 0;
-Instrument * instrument = Pen::GetInstance();
+
 
 DWORD ColorChooseDialog(HWND hWnd)
 {
@@ -169,7 +173,6 @@ DWORD ColorChooseDialog(HWND hWnd)
 
 LRESULT ProcessEditNotification(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
-	int wmId = LOWORD(wParam);
 	int wmEvent = HIWORD(wParam);
 	HWND edit = (HWND)lParam;
 
@@ -203,7 +206,6 @@ LRESULT ProcessCommand(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	int wmId, wmEvent;
 	wmId = LOWORD(wParam);
-	wmEvent = HIWORD(wParam);
 
 	switch (wmId)
 	{
@@ -220,7 +222,7 @@ LRESULT ProcessCommand(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		DWORD color = ColorChooseDialog(hWnd);
 		Instrument::PenColor = color;
-		HPEN newPen = CreatePen(NULL, 1, color);
+		HPEN newPen = CreatePen(NULL, Instrument::Width, color);
 		SelectObject(Instrument::DeviceDC, newPen);
 		SelectObject(Instrument::MemoryDC, newPen);
 	}
@@ -280,7 +282,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 	case WM_LBUTTONDOWN:
 	{
-		instrument->Initialize(LOWORD(lParam) - 130, HIWORD(lParam) - 30);
+		instrument->Initialize(
+			UserInterface.getCanvasCursorX(LOWORD(lParam)),
+			UserInterface.getCanvasCursorY(HIWORD(lParam)));
 		isActivated = true;
 	}
 		break;
@@ -288,16 +292,25 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		if (isActivated)
 		{
-			instrument->Display(LOWORD(lParam) - 130, HIWORD(lParam) - 30);
+			instrument->Display(
+				UserInterface.getCanvasCursorX(LOWORD(lParam)),
+				UserInterface.getCanvasCursorY(HIWORD(lParam)));
 		}
 	}
 		break;
 	case WM_LBUTTONUP:
 	{
-		instrument->Draw(LOWORD(lParam) - 130, HIWORD(lParam) - 30);
+		instrument->Draw(
+				UserInterface.getCanvasCursorX(LOWORD(lParam)),
+				UserInterface.getCanvasCursorY(HIWORD(lParam)));
 		isActivated = false;
 	}
 		break;	
+	case WM_SIZE:
+	{
+					  int i = 100;
+	}
+		break;
 	case WM_COMMAND:
 		ProcessCommand(hWnd, message, wParam, lParam);
 		break;

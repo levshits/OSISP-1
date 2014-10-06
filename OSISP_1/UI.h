@@ -21,11 +21,27 @@
 class UI
 {
  public:
-	UI(HWND hWnd, HINSTANCE hInstance);
+	UI(){};
+	void CreateUI(HWND hWnd, HINSTANCE hInstance);
 	HWND linewidthLabel;
 	HWND linewidthEdit;
 	DWORD penColor;
 	DWORD brushColor;
+	int CanvasOffsetX;
+	int CanvasOffsetY;
 
+	int getCanvasCursorX(int x)
+	{
+		return x - CanvasOffsetX;
+	}
+
+	int getCanvasCursorY(int y)
+	{
+		return y - CanvasOffsetY;
+	}
+
+private:
+	void CreateCanvas(HWND hwnd, HINSTANCE hinstance, int width, int height);
+	
 };
 
