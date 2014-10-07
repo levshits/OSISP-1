@@ -316,7 +316,12 @@ LRESULT ProcessCommand(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
 		break;
 	case IDM_EXIT:
-		DestroyWindow(hWnd);
+	{
+					 if (MessageBox(hWnd, L"Would you like to quit?", L"Quit", MB_YESNO) == IDYES)
+					 {
+						 DestroyWindow(hWnd);
+					 }
+	}
 		break;
 	case IDM_OPEN:
 	{
@@ -343,6 +348,7 @@ LRESULT ProcessCommand(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	}
 		break;
+
 	case UI_EDIT_WIDTH:
 	{
 		ProcessEditNotification(hWnd, wParam, lParam);							 
@@ -445,13 +451,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_CLOSE:
 	{
-		if (MessageBox(hWnd, L"Would you like to quit?", L"Quit", MB_YESNO) == IDYES)
-		{
-			DestroyWindow(hWnd);
-		}
-		else {
-			return 0;
-		}
+					 if (MessageBox(hWnd, L"Would you like to quit?", L"Quit", MB_YESNO) == IDYES)
+					 {
+						 DestroyWindow(hWnd);
+					 }
+					 else {
+						 return 0;
+					 }
 
 	}
 		break;
