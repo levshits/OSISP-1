@@ -194,6 +194,7 @@ void UI::CreateCanvas(HWND hWnd, HINSTANCE hInstance, int width, int height)
 	if (Instrument::DeviceDC != 0)
 		DeleteObject(Instrument::Canvas);
 	Instrument::DeviceDC = GetDC(Canvas);
+	SetStretchBltMode(Instrument::DeviceDC, HALFTONE);
 
 	
 }
@@ -206,6 +207,7 @@ void UI::CreateCanvasMemoryDC(HWND hwnd, HINSTANCE hinstance, int width, int hei
 	SelectObject(Instrument::MemoryDC, Instrument::Buffer);
 	static HBRUSH Brush = CreateSolidBrush(RGB(255, 255, 255));
 	FillRect(Instrument::MemoryDC, &rect, Brush);
+	
 }
 
 bool UI::isPointInsideCanvas(int x, int y)
