@@ -60,6 +60,12 @@
     <ClInclude Include="ZoomAndMove.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TextDrawing.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Grabe.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -78,6 +84,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ZoomAndMove.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TextDrawing.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Grabe.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

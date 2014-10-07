@@ -33,7 +33,7 @@ void UI::CreateUI(HWND hWnd, HINSTANCE hInstance)
 	InitCtrlEx.dwSize = sizeof(INITCOMMONCONTROLSEX);
 	InitCtrlEx.dwICC = ICC_BAR_CLASSES;
 	InitCommonControlsEx(&InitCtrlEx);
-	const int NUMBUTTONS = 14;
+	const int NUMBUTTONS = 12;
 	TBBUTTON tbrButtons[NUMBUTTONS];
 
 	//Pen
@@ -70,7 +70,7 @@ void UI::CreateUI(HWND hWnd, HINSTANCE hInstance)
 
 	//Triangle
 	tbrButtons[4].iBitmap = 4;
-	tbrButtons[4].idCommand = UI_INSTRUMENTS_TRIANGLE;
+	tbrButtons[4].idCommand = UI_INSTRUMENTS_FONT;
 	tbrButtons[4].fsState = TBSTATE_ENABLED;
 	tbrButtons[4].fsStyle = TBSTYLE_BUTTON | TBSTYLE_CHECKGROUP;
 	tbrButtons[4].dwData = 0L;
@@ -80,7 +80,7 @@ void UI::CreateUI(HWND hWnd, HINSTANCE hInstance)
 	tbrButtons[5].iBitmap = 6;
 	tbrButtons[5].idCommand = UI_INSTRUMENTS_TEXTOUT;
 	tbrButtons[5].fsState = TBSTATE_ENABLED;
-	tbrButtons[5].fsStyle = TBSTYLE_BUTTON;
+	tbrButtons[5].fsStyle = TBSTYLE_BUTTON | TBSTYLE_CHECKGROUP;
 	tbrButtons[5].dwData = 0L;
 	tbrButtons[5].iString = 0;
 
@@ -120,7 +120,7 @@ void UI::CreateUI(HWND hWnd, HINSTANCE hInstance)
 	tbrButtons[10].iBitmap = 5;
 	tbrButtons[10].idCommand = UI_INSTRUMENTS_GRABE;
 	tbrButtons[10].fsState = TBSTATE_ENABLED;
-	tbrButtons[10].fsStyle = TBSTYLE_BUTTON;
+	tbrButtons[10].fsStyle = TBSTYLE_BUTTON | TBSTYLE_CHECKGROUP;
 	tbrButtons[10].dwData = 0L;
 	tbrButtons[10].iString = 0;
 
@@ -132,22 +132,8 @@ void UI::CreateUI(HWND hWnd, HINSTANCE hInstance)
 	tbrButtons[11].dwData = 0L;
 	tbrButtons[11].iString = 0;
 
-	//Zoom
-	tbrButtons[12].iBitmap = 7;
-	tbrButtons[12].idCommand = UI_INSTRUMENTS_ZOOM;
-	tbrButtons[12].fsState = TBSTATE_ENABLED;
-	tbrButtons[12].fsStyle = TBSTYLE_BUTTON;
-	tbrButtons[12].dwData = 0L;
-	tbrButtons[12].iString = 0;
-	
 
-	//Group separator
-	tbrButtons[13].iBitmap = 0;
-	tbrButtons[13].idCommand = 0;
-	tbrButtons[13].fsState = TBSTATE_ENABLED;
-	tbrButtons[13].fsStyle = TBSTYLE_SEP;
-	tbrButtons[13].dwData = 0L;
-	tbrButtons[13].iString = 0;
+	
 
 
 	HWND hWndToolbar = CreateToolbarEx(hWnd,

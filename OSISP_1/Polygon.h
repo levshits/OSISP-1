@@ -9,6 +9,11 @@ public:
 	static Polygon* GetInstance()
 	{
 		static Polygon _self;
+		HPEN newPen = CreatePen(NULL, Instrument::Width, Instrument::PenColor);
+		HGDIOBJ temp = SelectObject(Instrument::DeviceDC, newPen);
+		DeleteObject(temp);
+		temp = SelectObject(Instrument::MemoryDC, newPen);
+		DeleteObject(temp);
 		return &_self;
 	}
 	virtual void Draw(int x, int y)

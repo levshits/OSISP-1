@@ -12,6 +12,8 @@
 #include "DragDrop.h"
 
 #define MAX_LOADSTRING 100
+#include "TextDrawing.h"
+#include "Grabe.h"
 
 // Global Variables:
 HINSTANCE hInst;								// current instance
@@ -25,6 +27,7 @@ BOOL				InitInstance(HINSTANCE, int);
 LRESULT CALLBACK	WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK	About(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK CreateDlgProc(HWND, UINT, WPARAM, LPARAM );
+INT_PTR CALLBACK InputDialog(HWND, UINT, WPARAM, LPARAM);
 
 HDC DisplayDC;
 HWND ButtonPen;
@@ -50,7 +53,7 @@ int ZoomAndMove::realHeight = 0;
 Instrument * instrument = Pen::GetInstance();
 HWND hwnd;
 HINSTANCE hinstance;
-
+TCHAR TextDrawing::text[] = L" ";
 int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
 	_In_ LPTSTR    lpCmdLine,
@@ -183,6 +186,36 @@ DWORD ColorChooseDialog(HWND hWnd)
 	return 0;
 }
 
+void FontChooseDialog(HWND hwnd, HDC hdc, HDC hdc1)
+{
+	CHOOSEFONT cf;            // common dialog box structure
+	static LOGFONT lf;        // logical font structure
+	static DWORD rgbCurrent;  // current text color
+	HFONT hfont, hfontPrev;
+	DWORD rgbPrev;
+
+	// Initialize CHOOSEFONT
+	ZeroMemory(&cf, sizeof(cf));
+	cf.lStructSize = sizeof (cf);
+	cf.hwndOwner = hwnd;
+	cf.lpLogFont = &lf;
+	cf.rgbColors = rgbCurrent;
+	cf.Flags = CF_SCREENFONTS | CF_EFFECTS;
+
+	if (ChooseFont(&cf) == TRUE)
+	{
+		hfont = CreateFontIndirect(cf.lpLogFont);
+		hfontPrev = (HFONT)SelectObject(hdc, hfont);
+		DeleteObject(hfontPrev);
+		hfontPrev = (HFONT)SelectObject(hdc1, hfont);
+		DeleteObject(hfontPrev);
+		rgbCurrent = cf.rgbColors;
+		rgbPrev = SetTextColor(hdc, rgbCurrent);
+		rgbPrev = SetTextColor(hdc1, rgbCurrent);
+
+	}
+}
+
 LRESULT ProcessEditNotification(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	int wmEvent = HIWORD(wParam);
@@ -224,6 +257,9 @@ LRESULT ProcessCommand(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case UI_INSTRUMENTS_PEN:
 		instrument = Pen::GetInstance();
 		break;
+	case UI_INSTRUMENTS_GRABE:
+		instrument = Grabe::GetInstance();
+		break;
 	case UI_INSTRUMENTS_LINE:
 		instrument = Line::GetInstance();
 		break;
@@ -235,8 +271,10 @@ LRESULT ProcessCommand(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		DWORD color = ColorChooseDialog(hWnd);
 		Instrument::PenColor = color;
 		HPEN newPen = CreatePen(NULL, Instrument::Width, color);
-		SelectObject(Instrument::DeviceDC, newPen);
-		SelectObject(Instrument::MemoryDC, newPen);
+		HGDIOBJ temp = SelectObject(Instrument::DeviceDC, newPen);
+		DeleteObject(temp);
+		temp = SelectObject(Instrument::MemoryDC, newPen);
+		DeleteObject(temp);
 	}
 		break;
 	case UI_INSTRUMENTS_BRUSHCOLOR:
@@ -250,6 +288,18 @@ LRESULT ProcessCommand(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	case UI_INSTRUMENTS_OVAL:
 		instrument = Oval::GetInstance();
+		break;
+	case UI_INSTRUMENTS_TEXTOUT:
+	{
+								   instrument = TextDrawing::GetInstance();
+								   DialogBox(hInst, MAKEINTRESOURCE(INPUT_TEXT_DIALOG),
+									   hWnd, InputDialog);
+	}
+		break;
+	case UI_INSTRUMENTS_FONT:
+	{
+		FontChooseDialog(hWnd,Instrument::DeviceDC, Instrument::MemoryDC);
+	}
 		break;
 	case IDM_ABOUT:
 		DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
@@ -463,3 +513,33 @@ INT_PTR CALLBACK CreateDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lP
 	return (INT_PTR)FALSE;
 }
 
+INT_PTR CALLBACK InputDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	switch (message)
+	{
+	case WM_INITDIALOG:
+		return (INT_PTR)TRUE;
+
+	case WM_COMMAND:
+	{
+					   switch (LOWORD(wParam))
+					   {
+					   case IDOK:
+					   {
+									
+									GetDlgItemText(hDlg, IDC_BITMAP_WIDTH, TextDrawing::text, MAX_LOADSTRING);
+
+									EndDialog(hDlg, LOWORD(wParam));
+									return (INT_PTR)TRUE;
+
+					   }
+						   break;
+					   case IDCANCEL:
+						   EndDialog(hDlg, LOWORD(wParam));
+						   return (INT_PTR)TRUE;
+					   }
+	}
+	}
+	
+	return (INT_PTR)FALSE;
+}

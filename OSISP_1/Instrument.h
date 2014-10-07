@@ -23,6 +23,7 @@ public:
 	{
 		previous_x = x;
 		previous_y = y;
+		
 	}
 
 	static int ToMemoryDCX(int x)
