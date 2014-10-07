@@ -39,7 +39,7 @@ HDC Instrument::DeviceDC = 0;
 HDC Instrument::MemoryDC = 0;
 HBITMAP Instrument::Buffer = 0;
 RECT Instrument::canvasRect = { 0, 0, 0, 0 };
-DWORD Instrument::BrushColor = 0;
+DWORD Instrument::BrushColor = RGB(255,255,255);
 DWORD Instrument::PenColor = 0;
 int UI::CanvasOffsetX = CANVAS_OFFSET_X;
 int UI::CanvasOffsetY = TOOLBAR_HEIGHT;
@@ -238,9 +238,12 @@ LRESULT ProcessEditNotification(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		}
 
 		instrument->Width = width;
-		HPEN newPen = CreatePen(NULL, instrument->Width, Instrument::PenColor);
-		SelectObject(Instrument::DeviceDC, newPen);
-		SelectObject(Instrument::MemoryDC, newPen);
+		HPEN newPen = CreatePen(NULL, instrument->Width*instrument->ZoomCoefficient, Instrument::PenColor);
+		HGDIOBJ temp = SelectObject(Instrument::DeviceDC, newPen);
+		DeleteObject(temp);
+		newPen = CreatePen(NULL, instrument->Width, Instrument::PenColor);
+		temp = SelectObject(Instrument::MemoryDC, newPen);
+		DeleteObject(temp);
 		return 0;
 	}
 		break;
@@ -401,6 +404,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		default:
 			ZoomAndMove::Move(hwnd, hinstance, 0, GET_WHEEL_DELTA_WPARAM(wParam) / 12);
 		}
+		HBRUSH newBrush = CreateSolidBrush(Instrument::BrushColor);
+		HGDIOBJ temp=SelectObject(Instrument::DeviceDC, newBrush);
+		DeleteObject(temp);
+		temp=SelectObject(Instrument::MemoryDC, newBrush);
+		DeleteObject(temp);
+		HPEN newPen = CreatePen(NULL, Instrument::Width*Instrument::ZoomCoefficient, Instrument::PenColor);
+		temp = SelectObject(Instrument::DeviceDC, newPen);
+		DeleteObject(temp);
+		newPen = CreatePen(NULL, Instrument::Width, Instrument::PenColor);
+		temp = SelectObject(Instrument::MemoryDC, newPen);
+		DeleteObject(temp);
 
 	}
 		break;

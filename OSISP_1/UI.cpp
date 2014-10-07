@@ -39,7 +39,7 @@ void UI::CreateUI(HWND hWnd, HINSTANCE hInstance)
 	//Pen
 	tbrButtons[0].iBitmap = 0;
 	tbrButtons[0].idCommand = UI_INSTRUMENTS_PEN;
-	tbrButtons[0].fsState = TBSTATE_ENABLED | TBSTATE_CHECKED;
+	tbrButtons[0].fsState = TBSTATE_ENABLED;
 	tbrButtons[0].fsStyle = TBSTYLE_BUTTON | TBSTYLE_CHECKGROUP;
 	tbrButtons[0].dwData = 0L;
 	tbrButtons[0].iString = 0;
@@ -120,7 +120,7 @@ void UI::CreateUI(HWND hWnd, HINSTANCE hInstance)
 	tbrButtons[10].iBitmap = 5;
 	tbrButtons[10].idCommand = UI_INSTRUMENTS_GRABE;
 	tbrButtons[10].fsState = TBSTATE_ENABLED;
-	tbrButtons[10].fsStyle = TBSTYLE_BUTTON | TBSTYLE_CHECKGROUP;
+	tbrButtons[10].fsStyle = TBSTYLE_BUTTON;
 	tbrButtons[10].dwData = 0L;
 	tbrButtons[10].iString = 0;
 
