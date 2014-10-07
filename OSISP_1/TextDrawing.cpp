@@ -12,12 +12,14 @@ void TextDrawing::Draw(int x, int y)
 
 void TextDrawing::Display(int x, int y)
 {
+	
 	LOGFONT temp = *logFont;
 	temp.lfHeight *= ZoomCoefficient;
 	temp.lfWidth *= ZoomCoefficient;
 	HFONT hfont = CreateFontIndirect(&temp);
 	HFONT hfontPrev = (HFONT)SelectObject(DeviceDC, hfont);
 	DeleteObject(hfontPrev);
+
 	ZoomAndMove::DisplayMemoryDC();
 	RECT rect = { previous_x, previous_y, x, y };
 	DrawText(DeviceDC, text, _tcslen(text), &rect, DT_CENTER);

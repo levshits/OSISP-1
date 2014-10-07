@@ -55,6 +55,7 @@ Instrument * instrument = Pen::GetInstance();
 HWND hwnd;
 HINSTANCE hinstance;
 TCHAR TextDrawing::text[] = L" ";
+bool isBitmapCreated = false;
 int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
 	_In_ LPTSTR    lpCmdLine,
@@ -296,9 +297,14 @@ LRESULT ProcessCommand(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	case UI_INSTRUMENTS_TEXTOUT:
 	{
-								   instrument = TextDrawing::GetInstance();
-								   DialogBox(hInst, MAKEINTRESOURCE(INPUT_TEXT_DIALOG),
-									   hWnd, InputDialog);
+								   if (Instrument::logFont != NULL)
+								   {
+									   instrument = TextDrawing::GetInstance();
+									   DialogBox(hInst, MAKEINTRESOURCE(INPUT_TEXT_DIALOG),
+										   hWnd, InputDialog);
+								   }
+								   else
+									   MessageBox(hWnd, L"Please, choose font before.", L"Error", MB_OK);
 	}
 		break;
 	case UI_INSTRUMENTS_FONT:
@@ -317,6 +323,7 @@ LRESULT ProcessCommand(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		TCHAR fileName[MAX_PATH] = { 0 };
 		OpenBitmapDialog(hWnd, fileName);
 		LoadBitmapFromFile(hWnd,hinstance, fileName);
+		isBitmapCreated = true;
 
 	}
 		break;
@@ -331,6 +338,7 @@ LRESULT ProcessCommand(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		DialogBox(hInst, MAKEINTRESOURCE(IDD_CREATE_DIALOG),
 			hWnd, CreateDlgProc);
+		isBitmapCreated = true;
 
 
 	}
@@ -360,7 +368,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		
 		int x = UI::getCanvasCursorX(LOWORD(lParam));
 		int y = UI::getCanvasCursorY(HIWORD(lParam));
-		if (UI::isPointInsideCanvas(x, y))
+		if (UI::isPointInsideCanvas(x, y) && isBitmapCreated)
 		{
 			instrument->Initialize(x,y);
 			isActivated = true;
@@ -369,7 +377,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_MOUSEMOVE:
 	{
-		if (isActivated)
+						 if (isActivated&& isBitmapCreated)
 		{
 			int x = UI::getCanvasCursorX(LOWORD(lParam));
 			int y = UI::getCanvasCursorY(HIWORD(lParam));
@@ -382,7 +390,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_LBUTTONUP:
 	{
-		if (isActivated)
+						 if (isActivated && isBitmapCreated)
 		{
 			instrument->Draw(
 				UI::getCanvasCursorX(LOWORD(lParam)),
@@ -393,28 +401,32 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_MOUSEWHEEL:
 	{
-		switch (GET_KEYSTATE_WPARAM(wParam))
-		{
-		case MK_CONTROL:
-			ZoomAndMove::Zoom(hwnd, hinstance, GET_WHEEL_DELTA_WPARAM(wParam));
-			break;
-		case MK_SHIFT:
-			ZoomAndMove::Move(hwnd, hinstance, GET_WHEEL_DELTA_WPARAM(wParam) / 12, 0);
-			break;
-		default:
-			ZoomAndMove::Move(hwnd, hinstance, 0, GET_WHEEL_DELTA_WPARAM(wParam) / 12);
-		}
-		HBRUSH newBrush = CreateSolidBrush(Instrument::BrushColor);
-		HGDIOBJ temp=SelectObject(Instrument::DeviceDC, newBrush);
-		DeleteObject(temp);
-		temp=SelectObject(Instrument::MemoryDC, newBrush);
-		DeleteObject(temp);
-		HPEN newPen = CreatePen(NULL, Instrument::Width*Instrument::ZoomCoefficient, Instrument::PenColor);
-		temp = SelectObject(Instrument::DeviceDC, newPen);
-		DeleteObject(temp);
-		newPen = CreatePen(NULL, Instrument::Width, Instrument::PenColor);
-		temp = SelectObject(Instrument::MemoryDC, newPen);
-		DeleteObject(temp);
+						  if (isBitmapCreated)
+						  {
+
+							  switch (GET_KEYSTATE_WPARAM(wParam))
+							  {
+							  case MK_CONTROL:
+								  ZoomAndMove::Zoom(hwnd, hinstance, GET_WHEEL_DELTA_WPARAM(wParam));
+								  break;
+							  case MK_SHIFT:
+								  ZoomAndMove::Move(hwnd, hinstance, GET_WHEEL_DELTA_WPARAM(wParam) / 12, 0);
+								  break;
+							  default:
+								  ZoomAndMove::Move(hwnd, hinstance, 0, GET_WHEEL_DELTA_WPARAM(wParam) / 12);
+							  }
+							  HBRUSH newBrush = CreateSolidBrush(Instrument::BrushColor);
+							  HGDIOBJ temp = SelectObject(Instrument::DeviceDC, newBrush);
+							  DeleteObject(temp);
+							  temp = SelectObject(Instrument::MemoryDC, newBrush);
+							  DeleteObject(temp);
+							  HPEN newPen = CreatePen(NULL, Instrument::Width*Instrument::ZoomCoefficient, Instrument::PenColor);
+							  temp = SelectObject(Instrument::DeviceDC, newPen);
+							  DeleteObject(temp);
+							  newPen = CreatePen(NULL, Instrument::Width, Instrument::PenColor);
+							  temp = SelectObject(Instrument::MemoryDC, newPen);
+							  DeleteObject(temp);
+						  }
 
 	}
 		break;
