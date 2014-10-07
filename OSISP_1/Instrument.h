@@ -12,6 +12,7 @@ public:
 	static int x_startdisplay;
 	static int y_startdisplay;
 	static DWORD PenColor, BrushColor;
+	static LOGFONT *logFont;
 	static HDC MemoryDC, DeviceDC;
 	static HBITMAP Buffer;
 	static RECT canvasRect;

@@ -33,6 +33,7 @@ HDC DisplayDC;
 HWND ButtonPen;
 int previous_x, previous_y;
 bool isActivated = false;
+LOGFONT* Instrument::logFont = NULL;
 HWND Instrument::Canvas = 0;
 HDC Instrument::DeviceDC = 0;
 HDC Instrument::MemoryDC = 0;
@@ -204,6 +205,7 @@ void FontChooseDialog(HWND hwnd, HDC hdc, HDC hdc1)
 
 	if (ChooseFont(&cf) == TRUE)
 	{
+		Instrument::logFont = cf.lpLogFont;
 		hfont = CreateFontIndirect(cf.lpLogFont);
 		hfontPrev = (HFONT)SelectObject(hdc, hfont);
 		DeleteObject(hfontPrev);
