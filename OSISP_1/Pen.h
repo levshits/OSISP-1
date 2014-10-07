@@ -12,12 +12,11 @@ public:
 	}
 	virtual void Draw(int x, int y)
 	{
-		MoveToEx(MemoryDC, previous_x, previous_y, NULL);
-		LineTo(MemoryDC, x, y);
+		MoveToEx(MemoryDC, ToMemoryDCX(previous_x), ToMemoryDCY(previous_y), NULL);
+		LineTo(MemoryDC, ToMemoryDCX(x), ToMemoryDCY(y));
 		previous_x = x;
 		previous_y = y;
-		BitBlt(DeviceDC, canvasRect.left, canvasRect.top, canvasRect.right, canvasRect.bottom, MemoryDC, canvasRect.left, canvasRect.top, SRCCOPY);
-		//InvalidateRect(Canvas, NULL, false);
+		ZoomAndMove::DisplayMemoryDC();
 	}
 	virtual void Display(int x, int y)
 	{

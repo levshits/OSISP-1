@@ -172,20 +172,15 @@ void UI::CreateUI(HWND hWnd, HINSTANCE hInstance)
 		LABEL_WIDTH, LABEL_HEIGHT,
 		hWnd, NULL, hInstance, NULL);
 
-	SetParent(linewidthEdit, hWndToolbar);
-
-	
-	this->CreateCanvas(hWnd, hInstance, 500,400);
-	this->CreateCanvasMemoryDC(hWnd, hInstance, 500, 400);
-		
+	SetParent(linewidthEdit, hWndToolbar);		
 }
 
 void UI::CreateCanvas(HWND hWnd, HINSTANCE hInstance, int width, int height)
 {
 	RECT rect = { 0, 0, 0, 0 };
 	GetClientRect(hWnd, &rect);
-	CanvasOffsetX = 5;
-	CanvasOffsetY = 30;
+	CanvasOffsetX = CANVAS_OFFSET_X;
+	CanvasOffsetY = TOOLBAR_HEIGHT;
 	if ((width == 0) && (height == 0))
 	{		
 		width = rect.right - 2 * CanvasOffsetX;
@@ -194,7 +189,7 @@ void UI::CreateCanvas(HWND hWnd, HINSTANCE hInstance, int width, int height)
 	else
 	{
 		CanvasOffsetX = (rect.right - 2 * CanvasOffsetX - width)/ 2;
-		CanvasOffsetY = (rect.bottom - CanvasOffsetY - width)/2 + CanvasOffsetY;
+		CanvasOffsetY = (rect.bottom - CanvasOffsetY - height)/2 + CanvasOffsetY;
 	}
 	HWND Canvas = CreateWindowEx(WS_EX_CLIENTEDGE | WS_EX_ACCEPTFILES,
 		L"Static",
@@ -205,7 +200,7 @@ void UI::CreateCanvas(HWND hWnd, HINSTANCE hInstance, int width, int height)
 	DragAcceptFiles(Canvas, FALSE);
 	UpdateWindow(hWnd);
 	UpdateWindow(Canvas);
-	GetClientRect(Canvas, &rect);
+	rect = { 0, 0, width-4, height-4 };
 	if (Instrument::Canvas != 0)
 		DestroyWindow(Instrument::Canvas);
 	Instrument::Canvas = Canvas;
@@ -219,13 +214,12 @@ void UI::CreateCanvas(HWND hWnd, HINSTANCE hInstance, int width, int height)
 
 void UI::CreateCanvasMemoryDC(HWND hwnd, HINSTANCE hinstance, int width, int height)
 {
-	RECT rect = Instrument::canvasRect;
+	RECT rect = { 0, 0, width, height };
 	Instrument::MemoryDC = CreateCompatibleDC(Instrument::DeviceDC);
 	Instrument::Buffer = CreateCompatibleBitmap(Instrument::DeviceDC, width, height);
 	SelectObject(Instrument::MemoryDC, Instrument::Buffer);
 	static HBRUSH Brush = CreateSolidBrush(RGB(255, 255, 255));
 	FillRect(Instrument::MemoryDC, &rect, Brush);
-	BitBlt(Instrument::DeviceDC, rect.left, rect.top, rect.right, rect.bottom, Instrument::MemoryDC, rect.left, rect.top, SRCCOPY);
 }
 
 bool UI::isPointInsideCanvas(int x, int y)

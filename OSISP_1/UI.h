@@ -18,31 +18,27 @@
 
 
 #define UI_EDIT_WIDTH 3000
+#define TOOLBAR_HEIGHT 30
+#define CANVAS_OFFSET_X 5
 class UI
 {
  public:
 	UI(){};
-	void CreateUI(HWND hWnd, HINSTANCE hInstance);
-	HWND linewidthLabel;
-	HWND linewidthEdit;
-	DWORD penColor;
-	DWORD brushColor;
-	int CanvasOffsetX;
-	int CanvasOffsetY;
-
-	int getCanvasCursorX(int x)
+	static void CreateUI(HWND hWnd, HINSTANCE hInstance);
+	static HWND linewidthLabel;
+	static HWND linewidthEdit;
+	static int CanvasOffsetX;
+	static int CanvasOffsetY;
+	static int getCanvasCursorX(int x)
 	{
 		return x - CanvasOffsetX;
 	}
-
-	int getCanvasCursorY(int y)
+	static int getCanvasCursorY(int y)
 	{
 		return y - CanvasOffsetY;
 	}
-	void CreateCanvas(HWND hwnd, HINSTANCE hinstance, int width, int height);
-	void CreateCanvasMemoryDC(HWND hwnd, HINSTANCE hinstance, int width, int height);
-	bool isPointInsideCanvas(int x, int y);
-	
-	
+	static void CreateCanvas(HWND hwnd, HINSTANCE hinstance, int width, int height);
+	static void CreateCanvasMemoryDC(HWND hwnd, HINSTANCE hinstance, int width, int height);
+	static bool isPointInsideCanvas(int x, int y);
 };
 

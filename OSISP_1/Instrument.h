@@ -1,5 +1,6 @@
 #pragma once
 #include <Windows.h>
+#include "ZoomAndMove.h"
 class Instrument
 {
 protected:
@@ -7,7 +8,9 @@ protected:
 	Instrument(){};
 	~Instrument(){};
 public:
-	
+	static double ZoomCoefficient;
+	static int x_startdisplay;
+	static int y_startdisplay;
 	static DWORD PenColor, BrushColor;
 	static HDC MemoryDC, DeviceDC;
 	static HBITMAP Buffer;
@@ -20,5 +23,15 @@ public:
 	{
 		previous_x = x;
 		previous_y = y;
+	}
+
+	static int ToMemoryDCX(int x)
+	{
+		return x/ZoomCoefficient + x_startdisplay;
+	}
+
+	static int ToMemoryDCY(int y)
+	{
+		return y/ZoomCoefficient + y_startdisplay;
 	}
 };

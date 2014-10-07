@@ -215,13 +215,18 @@ void SaveImageToBitmap(HWND hWnd, LPTSTR filePath)
 	CreateBitmapFile(hWnd, filePath, pBmpInfo, Instrument::Buffer, Instrument::MemoryDC);
 }
 
-void LoadBitmapFromFile(HWND hWnd, LPTSTR fileName)
+void LoadBitmapFromFile(HWND hWnd, HINSTANCE hinstance, LPTSTR fileName)
 {
-	Instrument::Buffer = (HBITMAP)LoadImage(NULL, fileName,
+	HBITMAP Buffer = (HBITMAP)LoadImage(NULL, fileName,
 		IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+	
+	BITMAP bi;
+	GetObject(Buffer, sizeof(BITMAP), &bi);
+	int width = bi.bmWidth,
+		height = bi.bmHeight;
+	ZoomAndMove::CreateCanvas(hWnd, hinstance, width, height);
+	Instrument::Buffer = Buffer;
 	HANDLE oldBuffer = SelectObject(Instrument::MemoryDC, Instrument::Buffer);
 	DeleteObject(oldBuffer);
-	BitBlt(Instrument::DeviceDC, Instrument::canvasRect.left, Instrument::canvasRect.top, Instrument::canvasRect.right,
-		Instrument::canvasRect.bottom, Instrument::MemoryDC, Instrument::canvasRect.left, Instrument::canvasRect.top, SRCCOPY);
-	
+	ZoomAndMove::DisplayMemoryDC();
 }

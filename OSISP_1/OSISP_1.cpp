@@ -37,9 +37,17 @@ HBITMAP Instrument::Buffer = 0;
 RECT Instrument::canvasRect = { 0, 0, 0, 0 };
 DWORD Instrument::BrushColor = 0;
 DWORD Instrument::PenColor = 0;
+int UI::CanvasOffsetX = CANVAS_OFFSET_X;
+int UI::CanvasOffsetY = TOOLBAR_HEIGHT;
+HWND UI::linewidthEdit = 0;
+HWND UI::linewidthLabel = 0;
+double Instrument::ZoomCoefficient = 0;
+int Instrument::x_startdisplay = 0;
+int Instrument::y_startdisplay = 0;
 int Instrument::Width = 1;
+int ZoomAndMove::realWidth = 0;
+int ZoomAndMove::realHeight = 0;
 Instrument * instrument = Pen::GetInstance();
-UI UserInterface;
 HWND hwnd;
 HINSTANCE hinstance;
 
@@ -136,7 +144,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	hwnd = hWnd;
 	ShowWindow(hWnd, SW_MAXIMIZE);
 	UpdateWindow(hWnd);
-	UserInterface.CreateUI(hWnd, hInst);
+	UI::CreateUI(hWnd, hInst);
 	UpdateWindow(hWnd);
 	return TRUE;
 }
@@ -253,7 +261,7 @@ LRESULT ProcessCommand(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		TCHAR fileName[MAX_PATH] = { 0 };
 		OpenBitmapDialog(hWnd, fileName);
-		LoadBitmapFromFile(hWnd, fileName);
+		LoadBitmapFromFile(hWnd,hinstance, fileName);
 
 	}
 		break;
@@ -295,9 +303,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_LBUTTONDOWN:
 	{
 		
-		int x = UserInterface.getCanvasCursorX(LOWORD(lParam));
-		int y = UserInterface.getCanvasCursorY(HIWORD(lParam));
-		if (UserInterface.isPointInsideCanvas(x,y))
+		int x = UI::getCanvasCursorX(LOWORD(lParam));
+		int y = UI::getCanvasCursorY(HIWORD(lParam));
+		if (UI::isPointInsideCanvas(x, y))
 		{
 			instrument->Initialize(x,y);
 			isActivated = true;
@@ -308,9 +316,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		if (isActivated)
 		{
-			int x = UserInterface.getCanvasCursorX(LOWORD(lParam));
-			int y = UserInterface.getCanvasCursorY(HIWORD(lParam));
-			if (UserInterface.isPointInsideCanvas(x, y))
+			int x = UI::getCanvasCursorX(LOWORD(lParam));
+			int y = UI::getCanvasCursorY(HIWORD(lParam));
+			if (UI::isPointInsideCanvas(x, y))
 			{
 				instrument->Display(x, y);
 			}
@@ -322,14 +330,32 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		if (isActivated)
 		{
 			instrument->Draw(
-				UserInterface.getCanvasCursorX(LOWORD(lParam)),
-				UserInterface.getCanvasCursorY(HIWORD(lParam)));
+				UI::getCanvasCursorX(LOWORD(lParam)),
+				UI::getCanvasCursorY(HIWORD(lParam)));
 			isActivated = false;
 		}		
 	}
-		break;	
+		break;
+	case WM_MOUSEWHEEL:
+	{
+		switch (GET_KEYSTATE_WPARAM(wParam))
+		{
+		case MK_CONTROL:
+			ZoomAndMove::Zoom(hwnd, hinstance, GET_WHEEL_DELTA_WPARAM(wParam));
+			break;
+		case MK_SHIFT:
+			ZoomAndMove::Move(hwnd, hinstance, GET_WHEEL_DELTA_WPARAM(wParam) / 12, 0);
+			break;
+		default:
+			ZoomAndMove::Move(hwnd, hinstance, 0, GET_WHEEL_DELTA_WPARAM(wParam) / 12);
+		}
+
+	}
+		break;
 	case WM_SIZE:
 	{
+					ZoomAndMove::UpdateCanvas(hwnd, hinstance);
+					ZoomAndMove::DisplayMemoryDC();
 	}
 		break;
 	case WM_COMMAND:
@@ -353,7 +379,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	case  WM_DROPFILES:
 	{
-		ProcessDragRequest(hWnd, (HDROP)wParam);
+		ProcessDragRequest(hWnd, hinstance, (HDROP)wParam);
 		return 0;
 	}	
 	case WM_DESTROY:
@@ -421,8 +447,7 @@ INT_PTR CALLBACK CreateDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lP
 				//SetWindowPos(instrument->Canvas, HWND_TOPMOST, 130, 30,
 				//	bitmapWidth, bitmapHeight, SWP_SHOWWINDOW);
 
-				UserInterface.CreateCanvas(hwnd, hinstance, bitmapWidth, bitmapHeight);
-				UserInterface.CreateCanvasMemoryDC(hwnd, hinstance, bitmapWidth, bitmapHeight);
+				ZoomAndMove::CreateCanvas(hwnd, hinstance, bitmapWidth, bitmapHeight);
 				EndDialog(hDlg, LOWORD(wParam));
 				return (INT_PTR)TRUE;
 			}	

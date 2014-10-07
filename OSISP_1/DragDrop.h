@@ -3,4 +3,4 @@
 #include <commdlg.h>
 #include <shellapi.h>
 
-void ProcessDragRequest(HWND hWnd, HDROP hDrop);
+void ProcessDragRequest(HWND hWnd, HINSTANCE hinstance, HDROP hDrop);

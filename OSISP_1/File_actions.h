@@ -10,4 +10,4 @@ void CopyBitmap(HBITMAP hbmOn, HBITMAP hbmWhat);
 
 void SaveImageToBitmap(HWND hWnd, LPTSTR filePath);
 
-void LoadBitmapFromFile(HWND hWnd, LPTSTR fileName);
+void LoadBitmapFromFile(HWND hWnd, HINSTANCE hinstance, LPTSTR fileName);

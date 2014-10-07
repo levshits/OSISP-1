@@ -13,12 +13,12 @@ public:
 	}
 	virtual void Draw(int x, int y)
 	{
-		Ellipse(MemoryDC, x, y, previous_x, previous_y);
-		BitBlt(DeviceDC, canvasRect.left, canvasRect.top, canvasRect.right, canvasRect.bottom, MemoryDC, canvasRect.left, canvasRect.top, SRCCOPY);
+		Ellipse(MemoryDC, ToMemoryDCX(x), ToMemoryDCY(y), ToMemoryDCX(previous_x), ToMemoryDCY(previous_y));
+		ZoomAndMove::DisplayMemoryDC();
 	}
 	virtual void Display(int x, int y)
 	{
-		BitBlt(DeviceDC, canvasRect.left, canvasRect.top, canvasRect.right, canvasRect.bottom, MemoryDC, canvasRect.left, canvasRect.top, SRCCOPY);
+		ZoomAndMove::DisplayMemoryDC();
 		Ellipse(DeviceDC, x, y, previous_x, previous_y);
 	}
 

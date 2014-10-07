@@ -11,7 +11,7 @@ BOOL validateFileType(TCHAR fileName[])
 	return  (_tcscmp(_T(".bmp"), extension) == 0);
 }
 
-void ProcessDragRequest(HWND hWnd, HDROP hDrop) {
+void ProcessDragRequest(HWND hWnd, HINSTANCE hinstance,HDROP hDrop) {
 	UINT fileCount = DragQueryFile(hDrop, -1, NULL, NULL);
 
 	if (fileCount == 1) {
@@ -22,7 +22,7 @@ void ProcessDragRequest(HWND hWnd, HDROP hDrop) {
 			
 			if (validateFileType(fileName)) 
 			{
-				LoadBitmapFromFile(hWnd, fileName);
+				LoadBitmapFromFile(hWnd, hinstance, fileName);
 			}
 			else
 			{
