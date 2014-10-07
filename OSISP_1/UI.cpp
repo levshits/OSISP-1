@@ -187,24 +187,26 @@ UI::UI(HWND hWnd, HINSTANCE hInstance)
 	RECT rect = { 0, 0, 0, 0 };
 	GetClientRect(hWnd, &rect);
 
-	Instrument::Canvas = CreateWindowEx(WS_EX_CLIENTEDGE | WS_EX_ACCEPTFILES,
+	HWND Canvas = CreateWindowEx(WS_EX_CLIENTEDGE | WS_EX_ACCEPTFILES,
 		L"Static", 
 		NULL, 
-		WS_CHILD | WS_VISIBLE, 
+		WS_CHILD | WS_VISIBLE | WS_VSCROLL | WS_HSCROLL, 
 		130, 30, rect.right - 150, rect.bottom-30, 
 		hWnd, NULL, hInstance, NULL);
 
 	
-	DragAcceptFiles(Instrument::Canvas, FALSE);
-	UpdateWindow(Instrument::Canvas);
+	DragAcceptFiles(Canvas, FALSE);
+	UpdateWindow(Canvas);
 
-	GetClientRect(Instrument::Canvas, &rect);
+	GetClientRect(Canvas, &rect);
 	Instrument::canvasRect = rect;
-	Instrument::DeviceDC = GetDC(Instrument::Canvas);
+	Instrument::DeviceDC = GetDC(Canvas);
 	Instrument::MemoryDC = CreateCompatibleDC(Instrument::DeviceDC);
 	Instrument::Buffer = CreateCompatibleBitmap(Instrument::DeviceDC, rect.right, rect.bottom);
 	SelectObject(Instrument::MemoryDC, Instrument::Buffer);
 	static HBRUSH Brush = CreateSolidBrush(RGB(255, 255, 255));
 	FillRect(Instrument::MemoryDC, &rect, Brush);
+
+	Instrument::Canvas = Canvas;
 }
 

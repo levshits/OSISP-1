@@ -142,6 +142,7 @@ HDC Instrument::DeviceDC = 0;
 HDC Instrument::MemoryDC = 0;
 HBITMAP Instrument::Buffer = 0;
 RECT Instrument::canvasRect = { 0, 0, 0, 0 };
+HWND Instrument::Canvas = NULL;
 DWORD Instrument::BrushColor = 0;
 DWORD Instrument::PenColor = 0;
 Instrument * instrument = Pen::GetInstance();
@@ -395,8 +396,13 @@ INT_PTR CALLBACK CreateDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lP
 				//SetWindowPos(instrument->Canvas, HWND_TOPMOST, 130, 30,
 				//	bitmapWidth, bitmapHeight, SWP_SHOWWINDOW);
 
-				MoveWindow(Instrument::Canvas, 130, 30, bitmapWidth, bitmapHeight, TRUE);
-				ScrollWindow(Instrument::Canvas, 10, 10, NULL, &instrument->canvasRect);
+				HWND Canvas = Instrument::Canvas;
+				/*MoveWindow(Instrument::Canvas, Instrument::canvasRect.left, Instrument::canvasRect.top,
+					bitmapWidth, bitmapHeight, TRUE);*/
+				MoveWindow(Instrument::Canvas, 130, 30,
+					bitmapWidth, bitmapHeight, TRUE);
+				RECT clip = { 200, 200, 400, 400 };
+				ScrollWindow(Instrument::Canvas, 10, 10, NULL, &clip);
 				UpdateWindow(Instrument::Canvas);
 				Instrument::DeviceDC = GetDC(Instrument::Canvas);
 				Instrument::MemoryDC = CreateCompatibleDC(Instrument::DeviceDC);
